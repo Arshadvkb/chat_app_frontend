@@ -1,11 +1,11 @@
 import React from 'react'
 
-const Navbar = () => {
+const Seetings_page = () => {
   return (
     <div>
-     Navbar 
+      
     </div>
   )
 }
 
-export default Navbar
+export default Seetings_page
