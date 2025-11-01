@@ -5,7 +5,7 @@ import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import { Users } from "lucide-react";
 
 const Sidebar = () => {
-  const { getUsers, users, selectedUser, setSelectedUser, isUsersLoading } =
+  const { getUsers, users=[], selectedUser, setSelectedUser, isUsersLoading } =
     useChatStore();
 
   const { onlineUsers } = useAuthStore();
@@ -18,7 +18,8 @@ const Sidebar = () => {
   const filteredUsers = showOnlineOnly
     ? users.filter((user) => onlineUsers.includes(user._id))
     : users;
-
+ console.log("users==="+users._id);
+ 
   if (isUsersLoading) return <SidebarSkeleton />;
 
   return (

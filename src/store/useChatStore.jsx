@@ -4,19 +4,22 @@ import toast from "react-hot-toast";
 import { useAuthStore } from "./useAuthStore";
 
 
-export const useChatStore = create((set) => ({
+export const useChatStore = create((set,get) => ({
   messages: [],
   users: [],
   selectedUser: null,
-  isUsersLoading: null,
-  isMessagesLoading: null,
-
+  isUsersLoading: false,
+  isMessagesLoading: false,
+ 
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
+      const{users}=get()
       const res = await axiosInstance.get("/messages/get_user");
-      set({ users: res.data });
-    } catch (error) {
+      set({ users: res.data.filterduser });
+      console.log("res====" ,users.fullname);
+    
+      } catch (error) {
       console.log("error from loading users" + error.message);
     } finally {
       set({ isUsersLoading: false });
