@@ -1,26 +1,29 @@
 import { create } from "zustand";
-import {axiosInstance} from "../lib/axios"
 import toast from "react-hot-toast";
+import { axiosInstance } from "../lib/axios";
 import { useAuthStore } from "./useAuthStore";
 
-
-export const useChatStore = create((set,get) => ({
+export const useChatStore = create((set, get) => ({
   messages: [],
   users: [],
   selectedUser: null,
   isUsersLoading: false,
   isMessagesLoading: false,
- 
+
   getUsers: async () => {
     set({ isUsersLoading: true });
     try {
-      const{users}=get()
       const res = await axiosInstance.get("/messages/get_user");
-      set({ users: res.data.filterduser });
-      console.log("res====" ,users.fullname);
-    
-      } catch (error) {
-      console.log("error from loading users" + error.message);
+      const usersArray = res.data.filterduser;
+     if (Array.isArray(usersArray)) {
+       set({ users: usersArray });
+     } else {
+       // If the API fails or sends wrong data, set an empty array
+       console.error("API did not return an array of users", res.data);
+       set({ users: [] });
+     }
+    } catch (error) {
+      toast.error(error.response.data.message);
     } finally {
       set({ isUsersLoading: false });
     }
@@ -30,14 +33,20 @@ export const useChatStore = create((set,get) => ({
     set({ isMessagesLoading: true });
     try {
       const res = await axiosInstance.get(`/messages/${userId}`);
-      set({ messages: res.data });
+       const messagesArray = res.data.messages;
+       if (Array.isArray(messagesArray)) {
+         set({ messages: messagesArray });
+       } else {
+         // If the API fails or sends wrong data, set an empty array
+         console.error("API did not return an array of users", res.data);
+         set({ users: [] });
+       }
     } catch (error) {
-      console.log("error from loading messages" + error.message);
+      toast.error(error.message);
     } finally {
       set({ isMessagesLoading: false });
     }
   },
-
   sendMessage: async (messageData) => {
     const { selectedUser, messages } = get();
     try {
@@ -47,7 +56,7 @@ export const useChatStore = create((set,get) => ({
       );
       set({ messages: [...messages, res.data] });
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.message);
     }
   },
 
